@@ -5,29 +5,40 @@ import { configDotenv } from "dotenv";
 
 configDotenv();
 const adminLogin = async (req, res) => {
-    const query = "SELECT * FROM admin WHERE email = ? AND password = ?";
+    const query = "SELECT password FROM admin WHERE email = ?";
     try {
 
         const [result, fields] = await con.query(query, [req.body.username, req.body.password]);
         if (result.length > 0) {
-            const user = result[0];
-            const email = user.email;
-            const token = jwt.sign({ role: "admin", email }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.TOKEN_SPAN});
-            res.cookie('token', token);
+            const isPasswordCorrect = await bcrypt.compare(req.body.password, result[0].password);
+            
+            if (isPasswordCorrect) {
+                const user = result[0];
+                const email = user.email;
+                const token = jwt.sign({ role: "admin", email }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.TOKEN_SPAN});
+                res.cookie('token', token);
 
-            return res.json({
-                loginStatus: true,
-            });
+                return res.json({
+                    loginStatus: true,
+                });
+            } else {
+                res.status(401);
+                return res.json({
+                    error: 'Password did not match'
+                })
+            }
         } else {
+            res.status(401);
             return res.json({
                 loginStatus: false,
                 error: "User not found. Please check credentials.",
             });
         }
     } catch (e) {
+        res.status(500);
         return res.json({
             loginStatus: false,
-            error: "Query Error",
+            error: e,
         });
     }
 };
@@ -37,20 +48,16 @@ const addCategory = async (req, res) => {
     try {
         const result = await con.query(query, [req.body.category]);
         if (result[0].insertId) {
-            return res.json({
-                status: 'Success',
-                message: 'Category added successfully'
-            })
+            return res.json({message: 'Category added successfully'})
         } else {
-            return res.json({
-                status: 'Failed',
-                message: "Something went wrong. Pleas try again later",
-            })
+            res.status(500);
+            return res.json({message: "Something went wrong. Pleas try again later",})
         }
     } catch (e) {
+        res.status(500);
         return res.json({
             status: 'Failed',
-            error: 'Error in Creating Category',
+            error: e,
         });
     }
 };
@@ -69,16 +76,16 @@ const addEmployee = async (req, res) => {
                 message: 'Employee added successfully'
             })
         } else {
-            return res.json({
-                status: 'Failed',
-                message: "Something went wrong. Pleas try again later",
-            })
+            res.status(400);
+            return res.json({error: "Something went wrong. Pleas try again later"});
         }
     } catch (e) {
-        return res.json({
-            status: 'Failed',
-            error: 'Error in Adding employee',
-        });
+        if (e.code && e.code === 'ER_DUP_ENTRY') {
+            res.status(409)
+            return res.json({error: 'Employee with this name or email id already exists'});
+        }
+        res.status(500);
+        return res.json({error: e});
     }
 };
 
@@ -87,17 +94,12 @@ const getAllEmployees = async (req, res) => {
         const sql = 'SELECT name, email, address, salary, category_id FROM employees';
         const [results] = await con.query(sql);
         if (results.length > 0) {
-            return res.json({
-                status: 'Success',
-                result: results,
-            })
+            return res.json({results})
         } else {
-            return res.json({
-                status: 'Failed',
-                message: 'No Employees to Display',
-            })
+            return res.json({ results: []})
         }
     } catch (e) {
+        res.status(500);
         return res.json({
             status: 'Failed',
             message: 'Try again after some time'
@@ -110,21 +112,14 @@ const getCategories = async (req, res) => {
         const sql = 'SELECT * FROM category';
         const [results] = await con.query(sql);
         if (results.length > 0) {
-            return res.json({
-                status: 'Success',
-                result: results,
-            })
+            return res.json({results});
         } else {
-            return res.json({
-                status: 'Failed',
-                message: 'No Categories to Display',
-            })
+            res.status(400);
+            return res.json({error: 'No Categories to Display'});
         }
     } catch (e) {
-        return res.json({
-            status: 'Failed',
-            message: 'Try again after some time'
-        })
+        res.status(500);
+        return res.json({error: 'Try again after some time'});
     }
 };
 
@@ -139,16 +134,12 @@ const getEmployee = async (req, res) => {
                 data: result[0],
             })
         } else {
-            return res.json({
-                status: 'Failed',
-                error: "Employee doesn't Exist",
-            })
+            res.status(404);
+            return res.json({error: "Employee doesn't Exist"});
         }
     } catch (e) {
-        return res.json({
-            status: 'Failed',
-            error: "Something went wrong. Please try again later",
-        })
+        res.status(500);
+        return res.json({error: "Something went wrong. Please try again later"});
     }
 };
 
@@ -168,21 +159,14 @@ const updateEmployee = async (req, res) => {
 
         const [results] = await con.query(sql, values);
         if (results.affectedRows > 0) {
-            return res.json({
-                status: "Success",
-                message: "Record edited successfully",
-            });
+            return res.json({message: "Record edited successfully"});
         } else {
-            return res.json({
-                status: "Failed",
-                message: "Employee not edited. Please try again",
-            });
+            res.status(500);
+            return res.json({error: "Employee not edited. Please try again"});
         }
     } catch (e) {
-        return res.json({
-            status: 'Failed',
-            message: 'Please try again later'
-        });
+        res.status(500);
+        return res.json({error: 'Please try again later'});
     }
 };
 
@@ -200,17 +184,12 @@ const deleteEmployee = async (req, res) => {
                 message: 'Employee Deleted',
             })
         } else {
-            return res.json({
-                status: 'Failed',
-                message: 'Failed to delete',
-            })
+            res.status(500);
+            return res.json({error: 'Failed to delete',})
         }
     } catch (e) {
-        return res.json({
-            status: 'Failed',
-            message: 'Failed to delete',
-            error: e,
-        });
+        res.status(500);
+        return res.json({error: e});
     }
 };
 
