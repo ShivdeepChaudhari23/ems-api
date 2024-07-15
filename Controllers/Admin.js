@@ -1,7 +1,5 @@
 import con from "../utils/db.js";
-import jwt from "jsonwebtoken";
 import bcrypt from 'bcrypt';
-import { configDotenv } from "dotenv";
 
 const addCategory = async (req, res) => {
     const query = "INSERT INTO category (`name`) VALUE (?)";
