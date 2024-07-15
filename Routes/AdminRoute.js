@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
     addCategory,
     addEmployee,
@@ -9,50 +10,20 @@ import {
     adminLogout,
     deleteEmployee
 } from "../Controllers/Admin.js";
-import jwt from "jsonwebtoken";
+import { validateAddCategoryPayload, validateCreateUserPayload, validateEditUserPayload } from "../utils/validations.js";
+import { authenticateHeader } from "../utils/authenticate.js";
 
 const router = express.Router();
 
-const authenticateHeader = (req, res, next) => {
-    const authorizationHeader = req.headers.authorization;
-    const authToken = authorizationHeader.split(' ')[1];
-    if (!authToken) {
-        res.status(401);
-        return res.json({
-            error: 'Unauthorized request',
-        });
-    }
-
-    const authData = jwt.decode(authToken, { complete: true });
-
-    if (!authData) {
-        res.status(401);
-        return res.json({
-            error: 'Invalid Token',
-        });
-    }
-
-
-    const tokenExpiry = authData.payload.exp;
-
-    if ((tokenExpiry * 1000) < Date.now()) {
-        res.status(401);
-        return res.json({
-            error: 'Token Expired',
-        });
-    }
-
-    next();
-};
-
 router.use(authenticateHeader);
 router
-    .post('/add-category', addCategory)
-    .post('/add-employee', addEmployee)
+    .post('/add-category', validateAddCategoryPayload, addCategory)
+    .post('/add-employee', validateCreateUserPayload, addEmployee)
     .get('/employees', getAllEmployees)
     .get('/categories', getCategories)
     .get('/employee/:id', getEmployee)
     .get('/logout', adminLogout)
-    .put('/employee/:id', updateEmployee)
+    .put('/employee/:id', validateEditUserPayload, updateEmployee)
     .delete('/employee/:id', deleteEmployee);
+
 export { router as adminRouter};
