@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { adminRouter } from './Routes/AdminRoute.js';
+import { loginRouter } from './Routes/Login.js';
 
 const app = express();
 
@@ -11,6 +12,8 @@ app.use(cors({
 }));
 
 app.use(express.json());
+
+app.use('/login', loginRouter);
 
 app.use('/admin', adminRouter);
 
