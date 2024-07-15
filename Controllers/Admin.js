@@ -50,8 +50,6 @@ const addEmployee = async (req, res) => {
 };
 
 const getAllEmployees = async (req, res) => {
-    // const authorizationHeader = req.headers.authorization;
-    // console.log('#### Calling Alll', authorizationHeader);
     try {
         const sql = 'SELECT name, email, address, salary, category_id FROM employees';
         const [results] = await con.query(sql);
