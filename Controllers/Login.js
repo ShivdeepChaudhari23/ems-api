@@ -16,15 +16,16 @@ const adminLogin = async (req, res) => {
                 const user = result[0];
                 const email = user.email;
                 const token = jwt.sign({ role: "admin", email }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.TOKEN_SPAN});
-                res.cookie('token', token);
 
                 return res.json({
                     loginStatus: true,
+                    token,
                 });
             } else {
                 res.status(401);
                 return res.json({
-                    error: 'Password did not match'
+                    loginStatus: false,
+                    error: 'Invalid Credentials'
                 })
             }
         } else {
