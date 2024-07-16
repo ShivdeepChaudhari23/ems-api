@@ -17,9 +17,9 @@ const adminLogin = async (req, res) => {
                 const email = user.email;
                 const token = jwt.sign({ role: "admin", email }, process.env.JWT_SECRET_KEY, { expiresIn: process.env.TOKEN_SPAN});
 
+                res.cookie('token', token);
                 return res.json({
                     loginStatus: true,
-                    token,
                 });
             } else {
                 res.status(401);
