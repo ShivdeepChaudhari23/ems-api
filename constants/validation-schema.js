@@ -25,6 +25,7 @@ const editEmployeeSchema = Joi.object({
 
 const addCategorySchema = Joi.object({
     category: Joi.string().min(5).max(30).required(), 
+    description: Joi.string().min(5).max(150),
 });
 
 export {
