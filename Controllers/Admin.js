@@ -1,25 +1,6 @@
 import con from "../utils/db.js";
 import bcrypt from 'bcrypt';
 
-const addCategory = async (req, res) => {
-    const query = "INSERT INTO category (`name`) VALUE (?)";
-    try {
-        const result = await con.query(query, [req.body.category]);
-        if (result[0].insertId) {
-            return res.json({message: 'Category added successfully'})
-        } else {
-            res.status(500);
-            return res.json({message: "Something went wrong. Pleas try again later",})
-        }
-    } catch (e) {
-        res.status(500);
-        return res.json({
-            status: 'Failed',
-            error: e,
-        });
-    }
-};
-
 const addEmployee = async (req, res) => {
     try { 
         const { name, email, password, address, salary, categoryId } = req.body;
@@ -62,22 +43,6 @@ const getAllEmployees = async (req, res) => {
             status: 'Failed',
             message: 'Try again after some time'
         })
-    }
-};
-
-const getCategories = async (req, res) => {
-    try {
-        const sql = 'SELECT * FROM category';
-        const [results] = await con.query(sql);
-        if (results.length > 0) {
-            return res.json({results});
-        } else {
-            res.status(400);
-            return res.json({error: 'No Categories to Display'});
-        }
-    } catch (e) {
-        res.status(500);
-        return res.json({error: 'Try again after some time'});
     }
 };
 
@@ -160,10 +125,8 @@ const adminLogout = async (req, res) => {
 
 export {
     adminLogout,
-    addCategory,
     addEmployee,
     getAllEmployees,
-    getCategories,
     getEmployee,
     updateEmployee,
     deleteEmployee

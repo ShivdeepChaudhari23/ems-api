@@ -28,9 +28,15 @@ const addCategorySchema = Joi.object({
     description: Joi.string().min(5).max(150),
 });
 
+const editCategorySchema = Joi.object({
+    name: Joi.string().min(5).max(30), 
+    description: Joi.string().min(0).max(150),
+});
+
 export {
     addCategorySchema,
     createEmployeeSchema,
     editEmployeeSchema,
     loginSchema,
+    editCategorySchema,
 };
