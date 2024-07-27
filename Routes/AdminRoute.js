@@ -1,17 +1,11 @@
 import express from "express";
 
-import {
-    addEmployee,
-    getAllEmployees,
-    getEmployee,
-    updateEmployee,
-    adminLogout,
-    deleteEmployee
-} from "../Controllers/Admin.js";
+import { adminLogout } from "../Controllers/Admin.js";
 import { validatePayload } from "../utils/validations.js";
 import { authenticateHeader } from "../utils/authenticate.js";
 import { addCategory, deleteCategories, getCategories, updateCategory } from "../Controllers/Category.js";
 import { addCategorySchema, createEmployeeSchema, editCategorySchema, editEmployeeSchema } from "../constants/validation-schema.js";
+import { addEmployee, deleteEmployee, getAllEmployees, getEmployee, updateEmployee } from "../Controllers/Employee.js";
 
 const router = express.Router();
 

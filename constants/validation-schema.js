@@ -6,20 +6,26 @@ const loginSchema = Joi.object({
 });
 
 const createEmployeeSchema = Joi.object({
-    name: Joi.string().min(5).max(50).required(),
-    email: Joi.string().email().min(3).max(30).required(),
-    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*()_+]{3,30}$')).required(),
-    address: Joi.string().min(10).max(100).required(),
+    firstName: Joi.string().min(5).max(50).required(),
+    lastName: Joi.string().min(5).max(100).required(),
+    address: Joi.string().min(5).max(150),
     salary: Joi.number().required(),
-    categoryId: Joi.number(),
+    emailAddress: Joi.string().email().min(3).max(30).required(),
+    pincode: Joi.number().required(),
+    joiningDate: Joi.number().required(),
+    imageUrl: Joi.string().max(512),
+    categoryId: Joi.number().required(),
 });
 
 const editEmployeeSchema = Joi.object({
-    name: Joi.string().min(5).max(50),
-    email: Joi.string().email().min(3).max(30),
-    password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9!@#$%^&*()_+]{3,30}$')),
-    address: Joi.string().min(10).max(100),
+    firstName: Joi.string().min(5).max(50),
+    lastName: Joi.string().min(5).max(100),
+    address: Joi.string().min(5).max(150),
     salary: Joi.number(),
+    emailAddress: Joi.string().email().min(3).max(30),
+    pincode: Joi.number(),
+    joiningDate: Joi.number(),
+    imageUrl: Joi.string().max(512),
     categoryId: Joi.number(),
 });
 
