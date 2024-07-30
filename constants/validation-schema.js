@@ -18,8 +18,8 @@ const createEmployeeSchema = Joi.object({
 });
 
 const editEmployeeSchema = Joi.object({
-    firstName: Joi.string().min(5).max(50),
-    lastName: Joi.string().min(5).max(100),
+    firstName: Joi.string().max(50),
+    lastName: Joi.string().max(100),
     address: Joi.string().min(5).max(150),
     salary: Joi.number(),
     emailAddress: Joi.string().email().min(3).max(30),
