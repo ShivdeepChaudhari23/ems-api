@@ -6,8 +6,8 @@ const loginSchema = Joi.object({
 });
 
 const createEmployeeSchema = Joi.object({
-    firstName: Joi.string().min(5).max(50).required(),
-    lastName: Joi.string().min(5).max(100).required(),
+    firstName: Joi.string().max(50).required(),
+    lastName: Joi.string().max(100).required(),
     address: Joi.string().min(5).max(150),
     salary: Joi.number().required(),
     emailAddress: Joi.string().email().min(3).max(30).required(),
